@@ -1,0 +1,105 @@
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+@import '~bootstrap/dist/css/bootstrap.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+
+.header {
+  position: fixed;
+  background-color: white;
+  font-size:x-large;
+    top: 0;
+    left: 0;
+    width: 200vw;
+    height: 6rem;
+    padding: 0 10vw;
+    margin-right: 50px; 
+    padding-top: 30px;
+    padding-right: 20px; 
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.5s;
+    z-index: 1000;
+}
+
+.nav-item {
+  padding-left: 30px; 
+}
+
+.welcome {
+  font-size:large;  
+  padding-top: 8px; 
+  padding-left: 300px; 
+}
+
+.navbar {
+  font-size:medium;
+  top: 45px;
+  left:150px;
+  width:50vw;
+  height: 4rem;
+}
+
+
+.stafftable {
+  margin-top: 100px;
+  margin-left: 300px; 
+  width:50vw;
+}
+
+.createStaff {
+  margin-top: 100px;
+  margin-left: 300px; 
+  width:50vw;
+  height: 4rem;
+}
+
+
+.Page {
+  display: flex;
+  justify-content: center;
+}
+
+
+.form-check form-switch {
+  padding-left: 10px; 
+}
