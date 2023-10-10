@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { connect } from 'react-redux';
 
-function CreateStaff() {
+function CreateStaff({ userData }) {
     const [formData, setFormData] = useState({
-        staffname: '',
         staffusername: '',
-        staffpassword: '',
-        reenterPassword: '',
+        stafffullname: '',
+        password: '',
+        reenterPassword:'',
+        approverid: ''
     });
 
     const handleChange = (e) => {
@@ -16,10 +19,35 @@ function CreateStaff() {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit  = async (e) => {
         e.preventDefault();
         // 在这里处理提交逻辑，可以向后端发送请求来创建 staff
         // 你可以使用 formData 中的数据
+
+        if(formData.password != formData.reenterPassword) {
+            alert("Passwords are not same");
+        }
+
+        // console.log('CreateStaff:', userData); 
+        formData.approverid = userData.id;
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'sender eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ4aW5oZSIsImlhdCI6MTY5NjgyMjg2NCwiZXhwIjoxNjk2OTA5MjY0fQ.0yzadLbZ4fZCAduDwRYHvrtbQFtd0aDQ4tFZU1LXN-0LD3Ivh1x2EuyQqux-QphgT5BMcWvfiLMA5dANJ7vp-A'
+            },
+        };
+        
+        const response = await axios.post('http://localhost:8081/api/v1/admin/staff', formData, config);
+
+
+        console.log(response);
+        if(response.data.code == 200) {
+            alert("Successfully create the staff");
+        } else {
+            alert(response.data.errorMessage);
+        }
+        
         console.log(formData);
     };
 
@@ -27,22 +55,8 @@ function CreateStaff() {
         <div className='createStaff'>
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                    <label htmlFor="staffname" className="form-label">
-                        Staff Name
-                    </label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="staffname"
-                        name="staffname"
-                        value={formData.staffname}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                <div className="mb-3">
                     <label htmlFor="staffusername" className="form-label">
-                        Staff Username
+                        Staff Name
                     </label>
                     <input
                         type="text"
@@ -55,15 +69,29 @@ function CreateStaff() {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="staffpassword" className="form-label">
+                    <label htmlFor="stafffullname" className="form-label">
+                        Staff Username
+                    </label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="stafffullname"
+                        name="stafffullname"
+                        value={formData.stafffullname}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label">
                         Staff Password
                     </label>
                     <input
                         type="password"
                         className="form-control"
-                        id="staffpassword"
-                        name="staffpassword"
-                        value={formData.staffpassword}
+                        id="password"
+                        name="password"
+                        value={formData.password}
                         onChange={handleChange}
                         required
                     />
@@ -92,5 +120,12 @@ function CreateStaff() {
     );
 }
 
+const mapStateToProps = (state) => {
+    // console.log('Redux State:', state.user); // 打印整个Redux状态树
+    return {
+        userData: state.user,
+    };
+};
 
-export default CreateStaff
+
+export default connect(mapStateToProps)(CreateStaff);

@@ -103,3 +103,10 @@
 .form-check form-switch {
   padding-left: 10px; 
 }
+
+.loginform {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  min-height: 100vh;
+}

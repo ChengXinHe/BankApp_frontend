@@ -6,11 +6,20 @@ function ViewStaff() {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8);
 
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'sender eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ4aW5oZSIsImlhdCI6MTY5NjgyMjg2NCwiZXhwIjoxNjk2OTA5MjY0fQ.0yzadLbZ4fZCAduDwRYHvrtbQFtd0aDQ4tFZU1LXN-0LD3Ivh1x2EuyQqux-QphgT5BMcWvfiLMA5dANJ7vp-A'
+        },
+    };
+
+
     // 发起 GET 请求来获取员工数据
     const fetchStaffData = async () => {
         try {
-            const response = await axios.get('http://localhost:8081/api/v1/admin/staff/1'); // 替换为实际的后端 API 地址
+            const response = await axios.get('http://localhost:8081/api/v1/admin/staff/1', config); // 替换为实际的后端 API 地址
             setStaffData(response.data.data);
+
         } catch (error) {
             console.error('Error fetching staff data:', error);
         }
@@ -22,7 +31,7 @@ function ViewStaff() {
             // 构建要发送的数据对象，包括员工ID和新的状态
             const dataToUpdate = {
                 staffid: staffId,
-                status: staffData.find(item => item.staffid === staffId).status
+                status: staffData.find(item => item.id === staffId).status
                
             };
             console.log(dataToUpdate.staffid);
@@ -32,15 +41,16 @@ function ViewStaff() {
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': 'sender eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ4aW5oZSIsImlhdCI6MTY5NjgyMjg2NCwiZXhwIjoxNjk2OTA5MjY0fQ.0yzadLbZ4fZCAduDwRYHvrtbQFtd0aDQ4tFZU1LXN-0LD3Ivh1x2EuyQqux-QphgT5BMcWvfiLMA5dANJ7vp-A'
                 },
             };
 
             
-            const response = await axios.put('http://localhost:8081/api/v1/admin/staff', dataToUpdate);
+            const response = await axios.put('http://localhost:8081/api/v1/admin/staff', dataToUpdate, config);
             console.log(response);
             // 更新本地状态数据
             const updatedStaffData = staffData.map(item => {
-                if (item.staffid === staffId) {
+                if (item.id === staffId) {
                     item.status = !item.status; // 反转状态
                 }
                 return item;
@@ -55,18 +65,20 @@ function ViewStaff() {
     useEffect(() => {
         // 获取员工数据
         fetchStaffData();
+        console.log(staffData);
     }, []);
     // // 计算当前页的数据
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = staffData.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = staffData ? staffData.slice(indexOfFirstItem, indexOfLastItem) : [];
+    
 
     // // // 生成表格行的函数
     const renderTableRows = () => {
         return currentItems.map((item, index) => (
             <tr key={index}>
-                <td>{item.staffid}</td>
-                <td>{item.staffname}</td>
+                <td>{item.id}</td>
+                <td>{item.username}</td>
                 <td>
                     <div class="form-check form-switch">
                         <input
@@ -74,12 +86,12 @@ function ViewStaff() {
                             type="checkbox"
                             role="switch"
                             checked={item.status}
-                            id={`flexSwitchCheckDefault_${item.staffid}`}
-                            onChange={() => handleStatusChange(item.staffid)} // 当复选框状态变化时触发处理函数
+                            id={`flexSwitchCheckDefault_${item.id}`}
+                            onChange={() => handleStatusChange(item.id)} // 当复选框状态变化时触发处理函数
                         />
                         <label
                             className="form-check-label"
-                            htmlFor={`flexSwitchCheckDefault_${item.staffid}`}>
+                            htmlFor={`flexSwitchCheckDefault_${item.id}`}>
                             {item.status ? 'Enable' : 'Disable'}
                         </label>
                     </div>
@@ -91,7 +103,8 @@ function ViewStaff() {
 
 
     // // 计算总页数
-    const totalPageCount = Math.ceil(staffData.length / itemsPerPage);
+    const totalPageCount = staffData ? Math.ceil(staffData.length / itemsPerPage) : 0;
+
 
     // // 生成分页按钮的函数
     const renderPaginationButtons = () => {
