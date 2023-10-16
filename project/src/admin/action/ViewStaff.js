@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'
+import axios from 'axios';
+import { connect } from 'react-redux';
 
-function ViewStaff() {
+function ViewStaff({ userData }) {
     const [staffData, setStaffData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8);
 
+    const token = localStorage.getItem('authToken');
+
     const config = {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'sender eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ4aW5oZSIsImlhdCI6MTY5NjgyMjg2NCwiZXhwIjoxNjk2OTA5MjY0fQ.0yzadLbZ4fZCAduDwRYHvrtbQFtd0aDQ4tFZU1LXN-0LD3Ivh1x2EuyQqux-QphgT5BMcWvfiLMA5dANJ7vp-A'
+            'Authorization': token
         },
     };
 
@@ -17,7 +20,12 @@ function ViewStaff() {
     // 发起 GET 请求来获取员工数据
     const fetchStaffData = async () => {
         try {
-            const response = await axios.get('http://localhost:8081/api/v1/admin/staff/1', config); // 替换为实际的后端 API 地址
+            const token = localStorage.getItem('authToken');
+            const uid = localStorage.getItem('id');
+
+            const url = 'http://localhost:8081/api/v1/admin/staff/' + uid;
+            const response = await axios.get(url, config);
+
             setStaffData(response.data.data);
 
         } catch (error) {
@@ -32,20 +40,12 @@ function ViewStaff() {
             const dataToUpdate = {
                 staffid: staffId,
                 status: staffData.find(item => item.id === staffId).status
-               
+
             };
             console.log(dataToUpdate.staffid);
             console.log(dataToUpdate.staffStatus);
 
-            // 发送PUT请求来更新员工状态
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'sender eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ4aW5oZSIsImlhdCI6MTY5NjgyMjg2NCwiZXhwIjoxNjk2OTA5MjY0fQ.0yzadLbZ4fZCAduDwRYHvrtbQFtd0aDQ4tFZU1LXN-0LD3Ivh1x2EuyQqux-QphgT5BMcWvfiLMA5dANJ7vp-A'
-                },
-            };
 
-            
             const response = await axios.put('http://localhost:8081/api/v1/admin/staff', dataToUpdate, config);
             console.log(response);
             // 更新本地状态数据
@@ -71,7 +71,7 @@ function ViewStaff() {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = staffData ? staffData.slice(indexOfFirstItem, indexOfLastItem) : [];
-    
+
 
     // // // 生成表格行的函数
     const renderTableRows = () => {
@@ -154,4 +154,13 @@ function ViewStaff() {
     );
 }
 
-export default ViewStaff
+
+const mapStateToProps = (state) => {
+    // console.log('Redux State:', state.user); // 打印整个Redux状态树
+    return {
+        userData: state.user,
+    };
+};
+
+
+export default connect(mapStateToProps)(ViewStaff);

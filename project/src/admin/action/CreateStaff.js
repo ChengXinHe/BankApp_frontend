@@ -7,7 +7,7 @@ function CreateStaff({ userData }) {
         staffusername: '',
         stafffullname: '',
         password: '',
-        reenterPassword:'',
+        reenterPassword: '',
         approverid: ''
     });
 
@@ -19,35 +19,47 @@ function CreateStaff({ userData }) {
         });
     };
 
-    const handleSubmit  = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         // 在这里处理提交逻辑，可以向后端发送请求来创建 staff
         // 你可以使用 formData 中的数据
 
-        if(formData.password != formData.reenterPassword) {
+        if (formData.password !== formData.reenterPassword) {
             alert("Passwords are not same");
         }
 
         // console.log('CreateStaff:', userData); 
         formData.approverid = userData.id;
+        const token = localStorage.getItem('authToken');
+
+        if (token) {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+            };
+        } else {
+            // 处理没有找到 token 的情况
+        }
 
         const config = {
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'sender eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ4aW5oZSIsImlhdCI6MTY5NjgyMjg2NCwiZXhwIjoxNjk2OTA5MjY0fQ.0yzadLbZ4fZCAduDwRYHvrtbQFtd0aDQ4tFZU1LXN-0LD3Ivh1x2EuyQqux-QphgT5BMcWvfiLMA5dANJ7vp-A'
+                'Authorization': userData.tokenType + " " + userData.accessToken
             },
         };
-        
+
         const response = await axios.post('http://localhost:8081/api/v1/admin/staff', formData, config);
 
 
         console.log(response);
-        if(response.data.code == 200) {
+        if (response.data.code === 200) {
             alert("Successfully create the staff");
         } else {
             alert(response.data.errorMessage);
         }
-        
+
         console.log(formData);
     };
 
